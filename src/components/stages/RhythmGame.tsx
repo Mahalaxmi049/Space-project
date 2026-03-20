@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePlayer } from "../../contexts/PlayerContext";
 
-// Game 1: Radio Astronomer - Rhythm Tap
 function RhythmTap({ onPass, onFail }: { onPass: () => void; onFail: () => void }) {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
@@ -70,7 +69,6 @@ function RhythmTap({ onPass, onFail }: { onPass: () => void; onFail: () => void 
   );
 }
 
-// Game 2: Physicist - Formula Match
 function FormulaGame({ onPass, onFail }: { onPass: () => void; onFail: () => void }) {
   const questions = [
     { q: "What makes a pulsar spin so fast?", options: ["Conservation of Angular Momentum", "Solar Wind", "Gravity Waves", "Dark Matter"], answer: 0 },
@@ -88,10 +86,9 @@ function FormulaGame({ onPass, onFail }: { onPass: () => void; onFail: () => voi
     setSelected(idx);
     const correct = idx === questions[current].answer;
     if (correct) { setScore((s) => s + 1); setFeedback("✅ Correct!"); }
-    else setFeedback(`❌ Wrong! Answer: ${questions[current].options[questions[current].answer]}`);
+    else setFeedback(`❌ Answer: ${questions[current].options[questions[current].answer]}`);
     setTimeout(() => {
-      setFeedback("");
-      setSelected(null);
+      setFeedback(""); setSelected(null);
       if (current + 1 >= questions.length) setDone(true);
       else setCurrent((c) => c + 1);
     }, 1500);
@@ -102,21 +99,21 @@ function FormulaGame({ onPass, onFail }: { onPass: () => void; onFail: () => voi
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem", textAlign: "center", width: "100%" }}>
       <h3 style={{ color: "white", fontSize: "1.5rem", fontWeight: 800 }}>Physicist Challenge!</h3>
-      <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>Answer 2/3 questions correctly to decode the signal!</p>
+      <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>Answer 2/3 questions correctly!</p>
       <div style={{ display: "flex", gap: "0.5rem" }}>
         {questions.map((_, i) => (
-          <div key={i} style={{ width: 16, height: 16, borderRadius: "50%", background: i < current ? (i < score ? "#4ade80" : "#ef4444") : i === current ? "#818cf8" : "rgba(255,255,255,0.1)" }} />
+          <div key={i} style={{ width: 16, height: 16, borderRadius: "50%", background: i < current ? "#4ade80" : i === current ? "#818cf8" : "rgba(255,255,255,0.1)" }} />
         ))}
       </div>
       {!done && (
         <>
           <motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: "1rem", padding: "1.25rem", width: "100%" }}>
-            <p style={{ color: "white", fontWeight: 600, fontSize: "1rem", margin: 0 }}>{questions[current].q}</p>
+            <p style={{ color: "white", fontWeight: 600, margin: 0 }}>{questions[current].q}</p>
           </motion.div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", width: "100%" }}>
             {questions[current].options.map((opt, idx) => (
               <motion.button key={idx} onClick={() => handleAnswer(idx)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                style={{ padding: "0.9rem", borderRadius: "0.75rem", border: selected === idx ? (idx === questions[current].answer ? "1px solid #4ade80" : "1px solid #ef4444") : "1px solid rgba(255,255,255,0.1)", background: selected === idx ? (idx === questions[current].answer ? "rgba(74,222,128,0.1)" : "rgba(239,68,68,0.1)") : "rgba(255,255,255,0.04)", color: "white", cursor: "pointer", fontSize: "0.85rem", fontWeight: 500 }}>
+                style={{ padding: "0.9rem", borderRadius: "0.75rem", border: selected === idx ? (idx === questions[current].answer ? "1px solid #4ade80" : "1px solid #ef4444") : "1px solid rgba(255,255,255,0.1)", background: selected === idx ? (idx === questions[current].answer ? "rgba(74,222,128,0.1)" : "rgba(239,68,68,0.1)") : "rgba(255,255,255,0.04)", color: "white", cursor: "pointer", fontSize: "0.85rem" }}>
                 {opt}
               </motion.button>
             ))}
@@ -127,7 +124,7 @@ function FormulaGame({ onPass, onFail }: { onPass: () => void; onFail: () => voi
       {done && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
           <div style={{ fontSize: "2rem" }}>{passed ? "🎉" : "🤔"}</div>
-          <h3 style={{ color: passed ? "#4ade80" : "#ef4444", fontWeight: 700 }}>{passed ? `${score}/3 Correct — Brilliant!` : `${score}/3 — Keep Studying!`}</h3>
+          <h3 style={{ color: passed ? "#4ade80" : "#ef4444", fontWeight: 700 }}>{passed ? `${score}/3 Correct!` : `${score}/3 — Try Again!`}</h3>
           <motion.button onClick={passed ? onPass : onFail} whileHover={{ scale: 1.05 }} style={{ padding: "0.9rem 2rem", background: passed ? "linear-gradient(135deg, #059669, #10b981)" : "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "white", border: "none", borderRadius: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
             {passed ? "See Results →" : "Try Again →"}
           </motion.button>
@@ -137,12 +134,10 @@ function FormulaGame({ onPass, onFail }: { onPass: () => void; onFail: () => voi
   );
 }
 
-// Game 3: Explorer - Star Map Navigation
-function ExplorerGame({ onPass, onFail }: { onPass: () => void; onFail: () => void }) {
+function ExplorerGame({ onPass }: { onPass: () => void; onFail: () => void }) {
   const steps = ["🌍 Earth", "🪐 Saturn", "⭐ Nearby Star", "🌌 Deep Space", "📡 Pulsar!"];
   const [current, setCurrent] = useState(0);
   const [done, setDone] = useState(false);
-  const [wrong, setWrong] = useState(false);
 
   const handleStep = () => {
     if (current + 1 >= steps.length) { setDone(true); return; }
@@ -152,48 +147,33 @@ function ExplorerGame({ onPass, onFail }: { onPass: () => void; onFail: () => vo
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem", textAlign: "center", width: "100%" }}>
       <h3 style={{ color: "white", fontSize: "1.5rem", fontWeight: 800 }}>Navigate To The Pulsar!</h3>
-      <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>You're an Explorer charting a course through deep space. Tap <strong style={{ color: "white" }}>LAUNCH</strong> at each waypoint!</p>
-
-      {/* Journey map */}
+      <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>Chart your course through deep space. Tap <strong style={{ color: "white" }}>LAUNCH</strong> at each waypoint!</p>
       <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap", justifyContent: "center", width: "100%" }}>
         {steps.map((step, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
             <motion.div
               animate={{ scale: i === current ? [1, 1.2, 1] : 1, boxShadow: i === current ? "0 0 20px rgba(99,102,241,0.8)" : "none" }}
               transition={{ repeat: i === current ? Infinity : 0, duration: 1 }}
-              style={{ background: i < current ? "rgba(74,222,128,0.2)" : i === current ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.05)", border: `1px solid ${i < current ? "#4ade80" : i === current ? "#818cf8" : "rgba(255,255,255,0.1)"}`, borderRadius: "0.75rem", padding: "0.5rem 0.75rem", color: i < current ? "#4ade80" : i === current ? "white" : "#475569", fontSize: "0.8rem", fontWeight: 600 }}
-            >
+              style={{ background: i < current ? "rgba(74,222,128,0.2)" : i === current ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.05)", border: `1px solid ${i < current ? "#4ade80" : i === current ? "#818cf8" : "rgba(255,255,255,0.1)"}`, borderRadius: "0.75rem", padding: "0.5rem 0.75rem", color: i < current ? "#4ade80" : i === current ? "white" : "#475569", fontSize: "0.8rem", fontWeight: 600 }}>
               {step}
             </motion.div>
             {i < steps.length - 1 && <span style={{ color: "#475569" }}>→</span>}
           </div>
         ))}
       </div>
-
       {!done && (
         <>
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: "1rem", padding: "1.25rem", width: "100%" }}
-          >
+          <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: "1rem", padding: "1.25rem", width: "100%" }}>
             <p style={{ color: "#a5b4fc", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 0.5rem" }}>Current Location</p>
             <p style={{ color: "white", fontWeight: 700, fontSize: "1.2rem", margin: 0 }}>{steps[current]}</p>
             {current < steps.length - 1 && <p style={{ color: "#94a3b8", fontSize: "0.85rem", margin: "0.5rem 0 0" }}>Next stop: {steps[current + 1]}</p>}
           </motion.div>
-
-          <motion.button
-            onClick={handleStep}
-            whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(99,102,241,0.4)" }}
-            whileTap={{ scale: 0.95 }}
-            style={{ padding: "1rem 2.5rem", background: "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "white", border: "none", borderRadius: "0.75rem", fontWeight: 700, fontSize: "1rem", cursor: "pointer", letterSpacing: "0.1em" }}
-          >
+          <motion.button onClick={handleStep} whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(99,102,241,0.4)" }} whileTap={{ scale: 0.95 }}
+            style={{ padding: "1rem 2.5rem", background: "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "white", border: "none", borderRadius: "0.75rem", fontWeight: 700, fontSize: "1rem", cursor: "pointer" }}>
             🚀 LAUNCH →
           </motion.button>
         </>
       )}
-
       {done && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
           <div style={{ fontSize: "2.5rem" }}>🎉</div>
@@ -208,7 +188,6 @@ function ExplorerGame({ onPass, onFail }: { onPass: () => void; onFail: () => vo
   );
 }
 
-// Main RhythmGame component
 export default function RhythmGame() {
   const { player, nextStage } = usePlayer();
   const [retry, setRetry] = useState(0);
@@ -222,33 +201,19 @@ export default function RhythmGame() {
 
   return (
     <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse at center, #0d0d1f 0%, #000 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", position: "relative", overflow: "hidden" }}>
-
-      {/* Stars */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
         {[...Array(80)].map((_, i) => (
           <motion.div key={i} style={{ position: "absolute", borderRadius: "50%", background: "white", width: Math.random() * 2 + 1, height: Math.random() * 2 + 1, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }} animate={{ opacity: [0.1, 0.8, 0.1] }} transition={{ duration: 2 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }} />
         ))}
       </div>
-
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ position: "relative", zIndex: 10, maxWidth: 520, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}>
-
-        {/* Header badge */}
         <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: "2rem", padding: "0.4rem 1rem", color: "#a5b4fc", fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>
           {player.scientistClass} Challenge
         </motion.div>
-
-        {/* Game */}
         {renderGame()}
-
-        {/* Back button */}
-        <motion.button
-          onClick={() => window.history.back()}
-          whileHover={{ scale: 1.03 }}
-          style={{ marginTop: "1rem", padding: "0.6rem 1.5rem", background: "transparent", color: "#475569", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", cursor: "pointer", fontSize: "0.8rem" }}
-        >
+        <motion.button onClick={() => window.history.back()} whileHover={{ scale: 1.03 }} style={{ marginTop: "0.5rem", padding: "0.6rem 1.5rem", background: "transparent", color: "#475569", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", cursor: "pointer", fontSize: "0.8rem" }}>
           ← Go Back
         </motion.button>
-
       </motion.div>
     </div>
   );
