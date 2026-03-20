@@ -1,17 +1,28 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { usePlayer, ScientistClass } from "../../contexts/PlayerContext";
+import { usePlayer } from "../../contexts/PlayerContext";
+import type { ScientistClass } from "../../contexts/PlayerContext";
+
 const classes: { label: ScientistClass; icon: string; desc: string }[] = [
   { label: "Radio Astronomer", icon: "📡", desc: "You listen to the cosmos" },
   { label: "Physicist", icon: "⚛️", desc: "You decode the laws of space" },
   { label: "Explorer", icon: "🚀", desc: "You chase the unknown" },
 ];
+
 export default function Onboarding() {
   const { setName, setScientistClass, nextStage } = usePlayer();
   const [inputName, setInputName] = useState("");
   const [selected, setSelected] = useState<ScientistClass | null>(null);
+
   const canProceed = inputName.trim().length > 0 && selected !== null;
-  const handleStart = () => { if (!canProceed) return; setName(inputName.trim()); setScientistClass(selected!); nextStage(); };
+
+  const handleStart = () => {
+    if (!canProceed) return;
+    setName(inputName.trim());
+    setScientistClass(selected!);
+    nextStage();
+  };
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", background: "linear-gradient(to bottom, #0a0a2e, #000)" }}>
       <div style={{ position: "fixed", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
