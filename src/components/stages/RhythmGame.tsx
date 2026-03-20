@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePlayer } from "../../contexts/PlayerContext";
 
 export default function RhythmGame() {
@@ -9,14 +9,15 @@ export default function RhythmGame() {
   const [pulseActive, setPulseActive] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [combo, setCombo] = useState(0);
   const intervalRef = useRef<any>(null);
   const totalRounds = 8;
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setPulseActive(true);
-      setTimeout(() => setPulseActive(false), 300);
-    }, 1000);
+      setTimeout(() => setPulseActive(false), 350);
+    }, 1200);
     return () => clearInterval(intervalRef.current);
   }, []);
 
@@ -26,14 +27,16 @@ export default function RhythmGame() {
     setAttempts(newAttempts);
 
     if (pulseActive) {
+      const newCombo = combo + 1;
+      setCombo(newCombo);
       setScore((s) => s + 1);
-      setFeedback("⚡ Perfect!");
+      setFeedback(newCombo >= 3 ? "🔥 COMBO!" : "⚡ Perfect!");
     } else {
-      setFeedback("❌ Missed!");
+      setCombo(0);
+      setFeedback("❌ Too Early!");
     }
 
-    setTimeout(() => setFeedback(""), 500);
-
+    setTimeout(() => setFeedback(""), 600);
     if (newAttempts >= totalRounds) {
       clearInterval(intervalRef.current);
       setGameOver(true);
@@ -42,77 +45,99 @@ export default function RhythmGame() {
 
   const passed = score >= 5;
 
+  const restart = () => {
+    setScore(0); setAttempts(0); setGameOver(false); setCombo(0);
+    intervalRef.current = setInterval(() => {
+      setPulseActive(true);
+      setTimeout(() => setPulseActive(false), 350);
+    }, 1200);
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: "black", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      {/* Stars */}
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse at center, #0d0d1f 0%, #000 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", position: "relative", overflow: "hidden" }}>
+
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
-        {[...Array(60)].map((_, i) => (
-          <motion.div key={i} style={{ position: "absolute", borderRadius: "50%", background: "white", width: Math.random() * 2 + 1, height: Math.random() * 2 + 1, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }} animate={{ opacity: [0.1, 1, 0.1] }} transition={{ duration: 2 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }} />
+        {[...Array(80)].map((_, i) => (
+          <motion.div key={i} style={{ position: "absolute", borderRadius: "50%", background: "white", width: Math.random() * 2 + 1, height: Math.random() * 2 + 1, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }} animate={{ opacity: [0.1, 0.8, 0.1] }} transition={{ duration: 2 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }} />
         ))}
       </div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ position: "relative", zIndex: 10, maxWidth: 500, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem", textAlign: "center" }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ position: "relative", zIndex: 10, maxWidth: 500, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem", textAlign: "center" }}>
 
-        <motion.p style={{ color: "#60a5fa", fontSize: "0.75rem", letterSpacing: "0.3em", textTransform: "uppercase" }} animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
+        <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: "2rem", padding: "0.4rem 1rem", color: "#a5b4fc", fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>
           Knowledge Check
-        </motion.p>
+        </motion.div>
 
-        <h2 style={{ color: "white", fontSize: "1.8rem", fontWeight: "bold" }}>
-          Match The Pulsar Beat!
-        </h2>
+        <h2 style={{ fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 800, color: "white", margin: 0 }}>Match The Pulsar Beat!</h2>
 
-        <p style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
-          Tap the button exactly when the pulsar flashes. Score {5}/{totalRounds} to decode the signal!
+        <p style={{ color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.6 }}>
+          Tap the pulsar <strong style={{ color: "white" }}>exactly when it flashes</strong>. 
+          Score {5}/{totalRounds} to decode the signal!
         </p>
 
-        {/* Score */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        {/* Score dots */}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {[...Array(totalRounds)].map((_, i) => (
-            <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: i < score ? "#4ade80" : i < attempts ? "#ef4444" : "rgba(255,255,255,0.1)" }} />
+            <motion.div
+              key={i}
+              animate={{ scale: i === attempts - 1 ? [1, 1.5, 1] : 1 }}
+              style={{ width: 14, height: 14, borderRadius: "50%", background: i < score ? "#4ade80" : i < attempts ? "#ef4444" : "rgba(255,255,255,0.1)", transition: "background 0.3s" }}
+            />
           ))}
         </div>
+
+        {/* Combo indicator */}
+        <AnimatePresence>
+          {combo >= 2 && !gameOver && (
+            <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} style={{ background: "rgba(251,191,36,0.15)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "2rem", padding: "0.3rem 0.8rem", color: "#fbbf24", fontSize: "0.8rem", fontWeight: 600 }}>
+              🔥 {combo}x Combo!
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Pulse button */}
         {!gameOver && (
           <motion.div
-            animate={{ scale: pulseActive ? 1.3 : 1, background: pulseActive ? "#60a5fa" : "rgba(96,165,250,0.1)" }}
-            transition={{ duration: 0.1 }}
             onClick={handleTap}
-            style={{ width: 160, height: 160, borderRadius: "50%", border: "2px solid #60a5fa", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "2rem" }}
+            animate={{
+              scale: pulseActive ? 1.25 : 1,
+              boxShadow: pulseActive ? "0 0 60px rgba(99,102,241,0.8), 0 0 120px rgba(99,102,241,0.4)" : "0 0 20px rgba(99,102,241,0.2)"
+            }}
+            transition={{ duration: 0.15 }}
+            style={{ width: 180, height: 180, borderRadius: "50%", border: `3px solid ${pulseActive ? "#818cf8" : "rgba(99,102,241,0.3)"}`, background: pulseActive ? "radial-gradient(circle, rgba(99,102,241,0.4), rgba(99,102,241,0.1))" : "radial-gradient(circle, rgba(99,102,241,0.1), transparent)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "3rem", userSelect: "none" }}
           >
             📡
           </motion.div>
         )}
 
         {/* Feedback */}
-        {feedback && (
-          <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ color: feedback.includes("Perfect") ? "#4ade80" : "#ef4444", fontWeight: "bold", fontSize: "1.2rem" }}>
-            {feedback}
-          </motion.p>
-        )}
+        <AnimatePresence>
+          {feedback && (
+            <motion.p key={feedback} initial={{ opacity: 0, y: -15, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10 }} style={{ color: feedback.includes("Perfect") || feedback.includes("COMBO") ? "#4ade80" : "#ef4444", fontWeight: 700, fontSize: "1.3rem", margin: 0 }}>
+              {feedback}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
-        {/* Score display */}
-        <p style={{ color: "#9ca3af" }}>Score: {score} / {attempts}</p>
+        <p style={{ color: "#64748b", fontSize: "0.85rem" }}>Score: <strong style={{ color: "white" }}>{score}</strong> / {attempts} attempts</p>
 
         {/* Game over */}
-        {gameOver && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-            <h3 style={{ color: passed ? "#4ade80" : "#ef4444", fontSize: "1.5rem", fontWeight: "bold" }}>
-              {passed ? "🎉 Signal Decoded!" : "📡 Try Again!"}
-            </h3>
-            <p style={{ color: "#9ca3af" }}>
-              {passed ? `Amazing work, ${player.name}! You matched the pulsar's rhythm.` : "The pulsar was too fast! Try tapping closer to the flash."}
-            </p>
-            <motion.button
-              onClick={passed ? nextStage : () => { setScore(0); setAttempts(0); setGameOver(false); intervalRef.current = setInterval(() => { setPulseActive(true); setTimeout(() => setPulseActive(false), 300); }, 1000); }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{ padding: "1rem 2rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.75rem", fontWeight: "bold", fontSize: "0.875rem", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer" }}
-            >
-              {passed ? "See Your Results →" : "Try Again →"}
-            </motion.button>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {gameOver && (
+            <motion.div initial={{ opacity: 0, y: 30, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} style={{ width: "100%", background: passed ? "rgba(74,222,128,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${passed ? "rgba(74,222,128,0.2)" : "rgba(239,68,68,0.2)"}`, borderRadius: "1rem", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+              <div style={{ fontSize: "2.5rem" }}>{passed ? "🎉" : "😮"}</div>
+              <h3 style={{ color: passed ? "#4ade80" : "#ef4444", fontSize: "1.4rem", fontWeight: 700, margin: 0 }}>
+                {passed ? "Signal Decoded!" : "Keep Trying!"}
+              </h3>
+              <p style={{ color: "#94a3b8", margin: 0, fontSize: "0.9rem" }}>
+                {passed ? `Incredible work, ${player.name}! You matched the pulsar's heartbeat with ${score}/${totalRounds} accuracy.` : `You scored ${score}/${totalRounds}. The pulsar needs at least 5 correct taps!`}
+              </p>
+              <motion.button onClick={passed ? nextStage : restart} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} style={{ padding: "0.9rem 2rem", background: passed ? "linear-gradient(135deg, #059669, #10b981)" : "linear-gradient(135deg, #4f46e5, #7c3aed)", color: "white", border: "none", borderRadius: "0.75rem", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer" }}>
+                {passed ? "See Your Results →" : "Try Again →"}
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
