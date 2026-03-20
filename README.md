@@ -1,73 +1,35 @@
-# React + TypeScript + Vite
+# The Last Signal 🌌
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A narrative-driven, interactive space education experience that teaches children about Pulsar Stars.
 
-Currently, two official plugins are available:
+## Live Demo
+https://space-project-hxxno86cc-mahalaxmi049s-projects.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## The Story
+You receive a mysterious radio signal from 1,000 light-years away. As you investigate, you discover it's coming from a Pulsar — a rapidly spinning neutron star. Your mission: tune into its frequency, decode its rhythm, and make contact.
 
-## React Compiler
+## Features
+- 🎭 **Personalised onboarding** — Enter your name and choose a scientist class (Radio Astronomer / Physicist / Explorer)
+- 🌌 **Atmospheric hook** — Animated starfield with pulsing signal wave
+- 🔵 **3D Interactive Pulsar** — Real-time spinning pulsar built with React Three Fiber + frequency slider to "lock on"
+- 🎮 **Personalised mini-games** per scientist class:
+  - Radio Astronomer → Rhythm tap game
+  - Physicist → Science quiz
+  - Explorer → Space navigation
+- 🏆 **Decoded screen** — Personalised mission complete screen
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
+- React + TypeScript
+- Framer Motion (animations)
+- React Three Fiber + Three.js (3D pulsar)
+- Context API (state management)
+- Vite + Vercel
 
-## Expanding the ESLint configuration
+## Design Decisions
+- Chose Pulsar Stars as the topic — unique, mysterious, perfect for a narrative experience
+- Each scientist class gets a different mini-game for true personalisation
+- Dark space aesthetic with gradient backgrounds and animated particles
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Trade-offs
+- Used inline styles as fallback due to Tailwind v4 PostCSS compatibility issue
+- AI personalisation was planned but deprioritised to complete all core stages in time
